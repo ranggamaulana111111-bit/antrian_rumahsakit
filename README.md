@@ -1,10 +1,10 @@
-# MediQueue
+# Prime Care Hospital
 
 Aplikasi Antrean Online Rumah Sakit berbasis Flutter dan SQLite.
 
 ## Deskripsi
 
-MediQueue membantu pasien melakukan pendaftaran dan pengambilan nomor antrean poli spesialis secara online tanpa harus datang ke rumah sakit terlebih dahulu.
+Prime Care Hospital membantu pasien melakukan pendaftaran dan pengambilan nomor antrean poli spesialis secara online tanpa harus datang ke rumah sakit terlebih dahulu.
 
 ## Fitur Utama
 

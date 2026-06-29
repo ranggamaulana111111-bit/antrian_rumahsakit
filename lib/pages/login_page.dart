@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    'MediQueue',
+                    'Prime Care Hospital',
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: 32,

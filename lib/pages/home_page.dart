@@ -504,7 +504,7 @@ class _HomeContent extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'MediQueue',
+                        'Prime Care Hospital',
                         style: TextStyle(
                           color: AppColors.white,
                           fontSize: 22,

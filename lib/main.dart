@@ -21,5 +21,5 @@ void main() {
       ),
     );
   };
-  runApp(const MediQueueApp());
+  runApp(const PrimeCareHospitalApp());
 }

@@ -74,7 +74,7 @@ class _SplashPageState extends State<SplashPage>
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  'MediQueue',
+                  'Prime Care Hospital',
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: 36,

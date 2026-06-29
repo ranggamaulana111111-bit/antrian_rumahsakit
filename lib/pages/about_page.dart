@@ -48,7 +48,7 @@ class _AboutPageState extends State<AboutPage> {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'MediQueue',
+                    'Prime Care Hospital',
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: 28,
@@ -116,7 +116,7 @@ class _AboutPageState extends State<AboutPage> {
                         ),
                         const SizedBox(height: 16),
                         const Text(
-                          'MediQueue adalah aplikasi antrean online rumah sakit '
+                          'Prime Care Hospital adalah aplikasi antrean online rumah sakit '
                           'yang membantu pasien melakukan pendaftaran dan '
                           'pengambilan nomor antrean poli spesialis secara online '
                           'tanpa harus datang ke rumah sakit terlebih dahulu.',
@@ -243,7 +243,7 @@ class _AboutPageState extends State<AboutPage> {
                   const SizedBox(height: 32),
                   Center(
                     child: Text(
-                      '© 2026 MediQueue. All rights reserved.',
+                      '© 2026 Prime Care Hospital. All rights reserved.',
                       style: TextStyle(
                         color: AppColors.textHint,
                         fontSize: 12,

@@ -224,78 +224,74 @@ class _ProfileContentState extends State<ProfileContent> {
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: AppColors.cardBg,
+          Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadow,
-                  blurRadius: 20,
-                  offset: const Offset(0, 4),
-                ),
-              ],
             ),
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 56,
-                      backgroundColor: AppColors.primarySurface,
-                      backgroundImage: _selectedImage != null
-                          ? FileImage(File(_selectedImage!.path))
-                          : const AssetImage(AppAssets.fotoKtm)
-                              as ImageProvider,
-                      child: _selectedImage == null
-                          ? const Icon(
-                              Icons.person_rounded,
-                              size: 56,
-                              color: AppColors.primary,
-                            )
-                          : null,
-                    ),
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: GestureDetector(
-                        onTap: _showImageSourceDialog,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: AppColors.primaryGradient,
-                            ),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primary.withValues(alpha: 0.3),
-                                blurRadius: 8,
+            color: AppColors.cardBg,
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 56,
+                        backgroundColor: AppColors.primarySurface,
+                        backgroundImage: _selectedImage != null
+                            ? FileImage(File(_selectedImage!.path))
+                            : const AssetImage(AppAssets.fotoKtm)
+                                as ImageProvider,
+                        child: _selectedImage == null
+                            ? const Icon(
+                                Icons.person_rounded,
+                                size: 56,
+                                color: AppColors.primary,
+                              )
+                            : null,
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: GestureDetector(
+                          onTap: _showImageSourceDialog,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: AppColors.primaryGradient,
                               ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.camera_alt_rounded,
-                            size: 18,
-                            color: AppColors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withValues(alpha: 0.3),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt_rounded,
+                              size: 18,
+                              color: AppColors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                TextButton.icon(
-                  onPressed: _showImageSourceDialog,
-                  icon: const Icon(Icons.camera_alt_rounded,
-                      size: 16, color: AppColors.primary),
-                  label: const Text(
-                    'Foto KTM',
-                    style: TextStyle(color: AppColors.primary),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  TextButton.icon(
+                    onPressed: _showImageSourceDialog,
+                    icon: const Icon(Icons.camera_alt_rounded,
+                        size: 16, color: AppColors.primary),
+                    label: const Text(
+                      'Foto KTM',
+                      style: TextStyle(color: AppColors.primary),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -372,7 +368,23 @@ class _ProfileContentState extends State<ProfileContent> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(AppAssets.logoUnpam, width: 48, height: 48),
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: AppColors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Image.asset(AppAssets.logoUnpam),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: AppColors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Image.asset(AppAssets.logoSi),
+                  ),
+                ),
                 const SizedBox(width: 16),
                 const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,7 +455,7 @@ class _ProfileContentState extends State<ProfileContent> {
                           ),
                           SizedBox(height: 2),
                           Text(
-                            'MediQueue v1.0',
+                            'Prime Care Hospital v1.0',
                             style: TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 13,
