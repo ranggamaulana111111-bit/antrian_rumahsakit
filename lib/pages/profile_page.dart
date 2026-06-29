@@ -301,8 +301,8 @@ class _ProfileContentState extends State<ProfileContent> {
                 GestureDetector(
                   onTap: _showImageSourceDialog,
                   child: Container(
-                    width: 56,
-                    height: 40,
+                    width: 448,
+                    height: 320,
                     decoration: BoxDecoration(
                       color: AppColors.primarySurface,
                       borderRadius: BorderRadius.circular(6),
@@ -326,22 +326,30 @@ class _ProfileContentState extends State<ProfileContent> {
                         : null,
                   ),
                 ),
-                const SizedBox(width: 16),
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: AppColors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Image.asset(AppAssets.logoUnpam),
+                const SizedBox(width: 24),
+                Container(
+                  width: 180,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.white,
+                    image: DecorationImage(
+                      image: AssetImage(AppAssets.logoUnpam),
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 16),
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: AppColors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Image.asset(AppAssets.logoSi),
+                const SizedBox(width: 12),
+                Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.white,
+                    image: DecorationImage(
+                      image: AssetImage(AppAssets.logoSi),
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),

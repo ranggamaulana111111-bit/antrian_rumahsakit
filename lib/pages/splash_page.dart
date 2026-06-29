@@ -65,10 +65,9 @@ class _SplashPageState extends State<SplashPage>
                     color: AppColors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(32),
                   ),
-                  child: Image.asset(
-                    AppAssets.logoApp,
-                    width: 100,
-                    height: 100,
+                  child: const Icon(
+                    Icons.medical_services_rounded,
+                    size: 80,
                     color: AppColors.white,
                   ),
                 ),
@@ -91,25 +90,6 @@ class _SplashPageState extends State<SplashPage>
                     fontWeight: FontWeight.w400,
                     letterSpacing: 0.5,
                   ),
-                ),
-                const SizedBox(height: 48),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      AppAssets.logoUnpam,
-                      width: 64,
-                      height: 64,
-                      color: AppColors.white.withValues(alpha: 0.9),
-                    ),
-                    const SizedBox(width: 20),
-                    Image.asset(
-                      AppAssets.logoSi,
-                      width: 52,
-                      height: 52,
-                      color: AppColors.white.withValues(alpha: 0.9),
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 48),
                 SizedBox(

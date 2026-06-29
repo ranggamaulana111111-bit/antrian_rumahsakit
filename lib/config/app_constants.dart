@@ -41,7 +41,7 @@ class AppColors {
 class AppAssets {
   static const String logoApp = 'assets/images/logo_app.png';
   static const String logoUnpam = 'assets/images/logo_unpam.png';
-  static const String logoSi = 'assets/images/logo_si.png';
+  static const String logoSi = 'assets/images/logo_si_serang.png';
   static const String fotoKtm = 'assets/images/foto_ktm.png';
   static const String ilustrasiDokter = 'assets/images/ilustrasi_dokter.png';
   static const String ilustrasiPasien = 'assets/images/ilustrasi_pasien.png';
