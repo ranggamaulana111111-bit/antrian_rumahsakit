@@ -300,17 +300,27 @@ class _ProfileContentState extends State<ProfileContent> {
               children: [
                 GestureDetector(
                   onTap: _showImageSourceDialog,
-                  child: CircleAvatar(
-                    radius: 32,
-                    backgroundColor: AppColors.primarySurface,
-                    backgroundImage: _selectedImage != null
-                        ? FileImage(File(_selectedImage!.path))
-                        : const AssetImage(AppAssets.fotoKtm)
-                            as ImageProvider,
+                  child: Container(
+                    width: 56,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySurface,
+                      borderRadius: BorderRadius.circular(6),
+                      image: _selectedImage != null
+                          ? DecorationImage(
+                              image: FileImage(File(_selectedImage!.path)),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.3),
+                        width: 1.5,
+                      ),
+                    ),
                     child: _selectedImage == null
                         ? const Icon(
                             Icons.credit_card_rounded,
-                            size: 32,
+                            size: 22,
                             color: AppColors.primary,
                           )
                         : null,
