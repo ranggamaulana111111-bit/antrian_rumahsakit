@@ -224,76 +224,6 @@ class _ProfileContentState extends State<ProfileContent> {
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
       child: Column(
         children: [
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
-            ),
-            color: AppColors.cardBg,
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                children: [
-                  Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 56,
-                        backgroundColor: AppColors.primarySurface,
-                        backgroundImage: _selectedImage != null
-                            ? FileImage(File(_selectedImage!.path))
-                            : const AssetImage(AppAssets.fotoKtm)
-                                as ImageProvider,
-                        child: _selectedImage == null
-                            ? const Icon(
-                                Icons.person_rounded,
-                                size: 56,
-                                color: AppColors.primary,
-                              )
-                            : null,
-                      ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: GestureDetector(
-                          onTap: _showImageSourceDialog,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: AppColors.primaryGradient,
-                              ),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withValues(alpha: 0.3),
-                                  blurRadius: 8,
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.camera_alt_rounded,
-                              size: 18,
-                              color: AppColors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton.icon(
-                    onPressed: _showImageSourceDialog,
-                    icon: const Icon(Icons.camera_alt_rounded,
-                        size: 16, color: AppColors.primary),
-                    label: const Text(
-                      'Foto KTM',
-                      style: TextStyle(color: AppColors.primary),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
           const SizedBox(height: 20),
           Container(
             padding: const EdgeInsets.all(20),
@@ -368,6 +298,25 @@ class _ProfileContentState extends State<ProfileContent> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                GestureDetector(
+                  onTap: _showImageSourceDialog,
+                  child: CircleAvatar(
+                    radius: 32,
+                    backgroundColor: AppColors.primarySurface,
+                    backgroundImage: _selectedImage != null
+                        ? FileImage(File(_selectedImage!.path))
+                        : const AssetImage(AppAssets.fotoKtm)
+                            as ImageProvider,
+                    child: _selectedImage == null
+                        ? const Icon(
+                            Icons.credit_card_rounded,
+                            size: 32,
+                            color: AppColors.primary,
+                          )
+                        : null,
+                  ),
+                ),
+                const SizedBox(width: 16),
                 CircleAvatar(
                   radius: 28,
                   backgroundColor: AppColors.white,
