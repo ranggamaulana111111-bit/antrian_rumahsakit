@@ -186,6 +186,37 @@ class QueueRepository {
     ''');
   }
 
+  Future<List<Queue>> getQueuesByPatientId(int patientId) async {
+    final results = await _db.query(
+      'queues',
+      where: 'patient_id = ?',
+      whereArgs: [patientId],
+      orderBy: 'id DESC',
+    );
+    return results.map((map) => Queue.fromMap(map)).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> getQueuesByPatientIdWithDetails(
+      int patientId) async {
+    final db = await _db.database;
+    return await db.rawQuery('''
+      SELECT
+        q.id,
+        q.nomor_antrean,
+        q.tanggal_kunjungan,
+        q.estimasi_waktu,
+        q.status,
+        p.nama AS patient_nama,
+        d.nama_dokter AS doctor_nama,
+        d.spesialis AS doctor_spesialis
+      FROM queues q
+      INNER JOIN patients p ON q.patient_id = p.id
+      INNER JOIN doctors d ON q.doctor_id = d.id
+      WHERE q.patient_id = ?
+      ORDER BY q.id DESC
+    ''', [patientId]);
+  }
+
   Future<bool> hasQueueForPatientToday(int patientId, String date) async {
     final results = await _db.query(
       'queues',

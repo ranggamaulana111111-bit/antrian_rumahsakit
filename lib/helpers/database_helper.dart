@@ -32,7 +32,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
       onConfigure: (db) async {
@@ -84,8 +84,21 @@ class DatabaseHelper {
       )
     ''');
 
+    await db.execute('''
+      CREATE TABLE users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'pasien',
+        nama TEXT NOT NULL,
+        patient_id INTEGER,
+        FOREIGN KEY (patient_id) REFERENCES patients(id)
+      )
+    ''');
+
     await _seedSpecialists(db);
     await _seedDoctors(db);
+    await _seedAdmin(db);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -106,9 +119,35 @@ class DatabaseHelper {
         ''');
         await _seedSpecialists(db);
       }
+      if (oldVersion < 4) {
+        await db.execute('''
+          CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'pasien',
+            nama TEXT NOT NULL,
+            patient_id INTEGER,
+            FOREIGN KEY (patient_id) REFERENCES patients(id)
+          )
+        ''');
+        await _seedAdmin(db);
+      }
     } finally {
       await db.execute('PRAGMA foreign_keys = ON');
     }
+  }
+
+  Future<void> _seedAdmin(Database db) async {
+    try {
+      await db.insert('users', {
+        'username': 'admin',
+        'password': 'admin123',
+        'role': 'admin',
+        'nama': 'Administrator',
+        'patient_id': null,
+      });
+    } catch (_) {}
   }
 
   Future<void> _seedSpecialists(Database db) async {

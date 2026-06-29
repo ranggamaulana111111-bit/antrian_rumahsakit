@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../config/app_constants.dart';
 import '../config/app_routes.dart';
 import '../repositories/queue_repository.dart';
+import '../services/auth_service.dart';
 import 'queue_registration_page.dart';
 import 'queue_list_page.dart';
 import 'profile_page.dart' show ProfileContent;
@@ -19,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   int _totalQueues = 0;
   int _todayQueues = 0;
   final QueueRepository _repo = QueueRepository();
+  final AuthService _auth = AuthService();
 
   @override
   void initState() {
@@ -28,13 +30,29 @@ class _HomePageState extends State<HomePage> {
 
   void _loadQueueCount() async {
     try {
-      final queues = await _repo.getAllQueues();
+      List<dynamic> queues;
       final today = DateTime.now();
       final todayStr =
           '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+
+      if (_auth.isPasien) {
+        final patientId = _auth.currentUser?.patientId;
+        if (patientId != null) {
+          queues = await _repo.getQueuesByPatientId(patientId);
+        } else {
+          queues = [];
+        }
+      } else {
+        queues = await _repo.getAllQueues();
+      }
+
       final todayQueues = queues.where((q) {
-        return q.tanggalKunjungan.startsWith(todayStr);
+        final date = q is Map<String, dynamic>
+            ? q['tanggal_kunjungan'] as String
+            : q.tanggalKunjungan;
+        return date.startsWith(todayStr);
       }).length;
+
       if (mounted) {
         setState(() {
           _totalQueues = queues.length;
@@ -53,6 +71,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final user = _auth.currentUser;
+    final displayName = user?.nama ?? 'Pengguna';
+    final isAdmin = _auth.isAdmin;
+
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
@@ -70,8 +92,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      drawer: _buildDrawer(),
-      body: _pages(),
+      drawer: _buildDrawer(displayName, isAdmin),
+      body: _pages(isAdmin),
       bottomNavigationBar: Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         decoration: BoxDecoration(
@@ -123,12 +145,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _pages() {
+  Widget _pages(bool isAdmin) {
     switch (_currentIndex) {
       case 0:
         return _HomeContent(
           totalQueues: _totalQueues,
           todayQueues: _todayQueues,
+          isAdmin: isAdmin,
           onNavigate: (route) {
             Navigator.pushNamed(context, route);
           },
@@ -185,7 +208,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildDrawer() {
+  Widget _buildDrawer(String displayName, bool isAdmin) {
     return Drawer(
       child: Column(
         children: [
@@ -211,16 +234,16 @@ class _HomePageState extends State<HomePage> {
                           CircleAvatar(
                             radius: 32,
                             backgroundColor: AppColors.white.withValues(alpha: 0.2),
-                            child: const Icon(
-                              Icons.person_rounded,
+                            child: Icon(
+                              isAdmin ? Icons.admin_panel_settings_rounded : Icons.person_rounded,
                               size: 36,
                               color: AppColors.white,
                             ),
                           ),
                           const SizedBox(height: 12),
-                          const Text(
-                            AppCredentials.namaMahasiswa,
-                            style: TextStyle(
+                          Text(
+                            displayName,
+                            style: const TextStyle(
                               color: AppColors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -228,18 +251,10 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            AppCredentials.nim,
+                            isAdmin ? 'Administrator' : 'Pasien',
                             style: TextStyle(
                               color: AppColors.white.withValues(alpha: 0.8),
                               fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            AppCredentials.programStudi,
-                            style: TextStyle(
-                              color: AppColors.white.withValues(alpha: 0.6),
-                              fontSize: 13,
                             ),
                           ),
                         ],
@@ -285,25 +300,31 @@ class _HomePageState extends State<HomePage> {
                     Navigator.pop(context);
                   },
                 ),
+                if (isAdmin) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Divider(color: AppColors.divider, thickness: 1),
+                  ),
+                  _DrawerItem(
+                    icon: Icons.people_rounded,
+                    label: 'Data Dokter',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, AppRoutes.dokter);
+                    },
+                  ),
+                  _DrawerItem(
+                    icon: Icons.category_rounded,
+                    label: 'Data Poli',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, AppRoutes.spesialis);
+                    },
+                  ),
+                ],
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Divider(color: AppColors.divider, thickness: 1),
-                ),
-                _DrawerItem(
-                  icon: Icons.people_rounded,
-                  label: 'Data Dokter',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, AppRoutes.dokter);
-                  },
-                ),
-                _DrawerItem(
-                  icon: Icons.category_rounded,
-                  label: 'Data Poli',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, AppRoutes.spesialis);
-                  },
                 ),
                 _DrawerItem(
                   icon: Icons.info_rounded,
@@ -324,6 +345,7 @@ class _HomePageState extends State<HomePage> {
                 width: double.infinity,
                 child: TextButton.icon(
                   onPressed: () {
+                    _auth.logout();
                     Navigator.pushNamedAndRemoveUntil(
                       context,
                       AppRoutes.login,
@@ -403,11 +425,13 @@ class _DrawerItem extends StatelessWidget {
 class _HomeContent extends StatelessWidget {
   final int totalQueues;
   final int todayQueues;
+  final bool isAdmin;
   final void Function(String route) onNavigate;
 
   const _HomeContent({
     required this.totalQueues,
     required this.todayQueues,
+    required this.isAdmin,
     required this.onNavigate,
   });
 
@@ -439,6 +463,8 @@ class _HomeContent extends StatelessWidget {
   }
 
   Widget _buildHeroSection(BuildContext context) {
+    final auth = AuthService();
+    final displayName = auth.currentUser?.nama ?? 'Pengguna';
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -508,9 +534,9 @@ class _HomeContent extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                AppCredentials.namaMahasiswa,
-                style: TextStyle(
+              Text(
+                displayName,
+                style: const TextStyle(
                   color: AppColors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
@@ -565,7 +591,7 @@ class _HomeContent extends StatelessWidget {
         Expanded(
           child: _ActionCard(
             title: 'Data Antrean',
-            subtitle: 'Lihat semua antrean',
+            subtitle: isAdmin ? 'Lihat semua antrean' : 'Lihat antrean saya',
             icon: Icons.format_list_bulleted_rounded,
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
@@ -617,30 +643,32 @@ class _HomeContent extends StatelessWidget {
           color: AppColors.primary,
           onTap: () => onNavigate(AppRoutes.profil),
         ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _MenuCard(
-                icon: Icons.people_rounded,
-                label: 'Data Dokter',
-                subtitle: 'Kelola dokter',
-                color: AppColors.primaryLight,
-                onTap: () => onNavigate(AppRoutes.dokter),
+        if (isAdmin) ...[
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _MenuCard(
+                  icon: Icons.people_rounded,
+                  label: 'Data Dokter',
+                  subtitle: 'Kelola dokter',
+                  color: AppColors.primaryLight,
+                  onTap: () => onNavigate(AppRoutes.dokter),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _MenuCard(
-                icon: Icons.category_rounded,
-                label: 'Data Poli',
-                subtitle: 'Kelola poli',
-                color: AppColors.gold,
-                onTap: () => onNavigate(AppRoutes.spesialis),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _MenuCard(
+                  icon: Icons.category_rounded,
+                  label: 'Data Poli',
+                  subtitle: 'Kelola poli',
+                  color: AppColors.gold,
+                  onTap: () => onNavigate(AppRoutes.spesialis),
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ],
     );
   }

@@ -48,9 +48,7 @@ class AppAssets {
 }
 
 class AppCredentials {
-  static const String username = 'Nama Mahasiswa';
-  static const String password = 'NIM';
-  static const String namaMahasiswa = 'Nama Mahasiswa';
+  static const String namaMahasiswa = 'Mahasiswa';
   static const String nim = 'NIM';
   static const String programStudi = 'Sistem Informasi';
 }

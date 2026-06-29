@@ -8,6 +8,7 @@ import '../models/patient.dart';
 import '../models/queue.dart';
 import '../models/specialist.dart';
 import '../repositories/queue_repository.dart';
+import '../services/auth_service.dart';
 
 class QueueRegistrationPage extends StatefulWidget {
   const QueueRegistrationPage({super.key});
@@ -39,6 +40,7 @@ class _QueueRegistrationFormState extends State<QueueRegistrationForm> {
   final _hpController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final QueueRepository _repo = QueueRepository();
+  final AuthService _auth = AuthService();
 
   String? _selectedPoli;
   String? _selectedDoctorId;
@@ -58,6 +60,25 @@ class _QueueRegistrationFormState extends State<QueueRegistrationForm> {
     super.initState();
     _loadDoctors();
     _loadPoli();
+    _prefillPatientData();
+  }
+
+  void _prefillPatientData() async {
+    if (!_auth.isPasien) return;
+    final patientId = _auth.currentUser?.patientId;
+    if (patientId == null) return;
+    try {
+      final patient = await _repo.getPatientById(patientId);
+      if (patient != null && mounted) {
+        _namaController.text = patient.nama;
+        _nikController.text = patient.nik;
+        _hpController.text = patient.nomorHp;
+        _jenisKelamin = patient.jenisKelamin;
+        try {
+          _birthDate = DateTime.parse(patient.tanggalLahir);
+        } catch (_) {}
+      }
+    } catch (_) {}
   }
 
   void _loadPoli() async {
@@ -409,14 +430,14 @@ class _QueueRegistrationFormState extends State<QueueRegistrationForm> {
           const SizedBox(height: 16),
           RadioGroup<String>(
             groupValue: _jenisKelamin,
-            onChanged: (v) => setState(() => _jenisKelamin = v!),
+            onChanged: (v) { if (v != null) setState(() => _jenisKelamin = v); },
             child: Row(
               children: [
                 const Text('Jenis Kelamin: '),
-                Radio<String>(value: 'Laki-laki'),
+                const Radio<String>(value: 'Laki-laki'),
                 const Text('Laki-laki'),
                 const SizedBox(width: 16),
-                Radio<String>(value: 'Perempuan'),
+                const Radio<String>(value: 'Perempuan'),
                 const Text('Perempuan'),
               ],
             ),

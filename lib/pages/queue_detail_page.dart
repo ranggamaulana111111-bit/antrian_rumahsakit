@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../config/app_constants.dart';
+import '../config/app_routes.dart';
 import '../repositories/queue_repository.dart';
+import '../services/auth_service.dart';
 
 class QueueDetailPage extends StatefulWidget {
   final int? queueId;
@@ -14,6 +16,7 @@ class QueueDetailPage extends StatefulWidget {
 
 class _QueueDetailPageState extends State<QueueDetailPage> {
   final QueueRepository _repo = QueueRepository();
+  final AuthService _auth = AuthService();
   Map<String, dynamic>? _detail;
   bool _isLoading = true;
 
@@ -139,6 +142,7 @@ class _QueueDetailPageState extends State<QueueDetailPage> {
 
     final d = _detail!;
     final status = d['status'] as String;
+    final isAdmin = _auth.isAdmin;
 
     return RefreshIndicator(
       onRefresh: () async => _loadDetail(),
@@ -171,7 +175,7 @@ class _QueueDetailPageState extends State<QueueDetailPage> {
               _infoRow('Estimasi', d['estimasi_waktu'] as String),
             ]),
             const SizedBox(height: 24),
-            _buildStatusActions(status),
+            _buildStatusActions(status, isAdmin),
           ],
         ),
       ),
@@ -273,13 +277,16 @@ class _QueueDetailPageState extends State<QueueDetailPage> {
     );
   }
 
-  Widget _buildStatusActions(String currentStatus) {
-    if (currentStatus == 'Selesai') return const SizedBox.shrink();
+  Widget _buildStatusActions(String currentStatus, bool isAdmin) {
+    if (currentStatus == 'Selesai') {
+      if (!isAdmin) return const SizedBox.shrink();
+      return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (currentStatus == 'Menunggu')
+        if (isAdmin && currentStatus == 'Menunggu')
           ElevatedButton.icon(
             onPressed: () => _updateStatus('Dipanggil'),
             icon: const Icon(Icons.volume_up),
@@ -289,7 +296,7 @@ class _QueueDetailPageState extends State<QueueDetailPage> {
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
           ),
-        if (currentStatus == 'Dipanggil')
+        if (isAdmin && currentStatus == 'Dipanggil')
           ElevatedButton.icon(
             onPressed: () => _updateStatus('Selesai'),
             icon: const Icon(Icons.check_circle),
@@ -299,17 +306,57 @@ class _QueueDetailPageState extends State<QueueDetailPage> {
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
           ),
-        const SizedBox(height: 12),
-        OutlinedButton.icon(
-          onPressed: _deleteQueue,
-          icon: const Icon(Icons.delete),
-          label: const Text('Hapus Antrean'),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.error,
-            side: const BorderSide(color: AppColors.error),
-            padding: const EdgeInsets.symmetric(vertical: 14),
+        if (isAdmin && currentStatus != 'Selesai') ...[
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () async {
+              await Navigator.pushNamed(
+                context,
+                AppRoutes.editAntrean,
+                arguments: widget.queueId,
+              );
+              _loadDetail();
+            },
+            icon: const Icon(Icons.edit),
+            label: const Text('Edit Antrean'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.primary,
+              side: const BorderSide(color: AppColors.primary),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
           ),
-        ),
+        ],
+        if (!isAdmin && currentStatus == 'Menunggu') ...[
+          ElevatedButton.icon(
+            onPressed: () async {
+              await Navigator.pushNamed(
+                context,
+                AppRoutes.editAntrean,
+                arguments: widget.queueId,
+              );
+              _loadDetail();
+            },
+            icon: const Icon(Icons.edit),
+            label: const Text('Ubah Antrean'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+          ),
+        ],
+        if (currentStatus == 'Menunggu') ...[
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _deleteQueue,
+            icon: const Icon(Icons.cancel),
+            label: const Text('Batalkan Antrean'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.error,
+              side: const BorderSide(color: AppColors.error),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+          ),
+        ],
       ],
     );
   }

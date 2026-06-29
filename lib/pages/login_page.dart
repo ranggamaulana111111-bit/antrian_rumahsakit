@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/app_constants.dart';
 import '../config/app_routes.dart';
+import '../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,6 +14,7 @@ class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final AuthService _auth = AuthService();
   bool _isLoading = false;
   bool _obscurePassword = true;
 
@@ -23,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _handleLogin() {
+  void _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
@@ -31,27 +33,25 @@ class _LoginPageState extends State<LoginPage> {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (!mounted) return;
+    final user = await _auth.login(username, password);
 
-      setState(() => _isLoading = false);
+    if (!mounted) return;
+    setState(() => _isLoading = false);
 
-      if (username == AppCredentials.username &&
-          password == AppCredentials.password) {
-        Navigator.pushReplacementNamed(context, AppRoutes.home);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Username atau password salah'),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+    if (user != null) {
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Username atau password salah'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-        );
-      }
-    });
+        ),
+      );
+    }
   }
 
   @override
@@ -238,6 +238,22 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                               ),
                             ),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Belum punya akun? ',
+                                style: TextStyle(color: AppColors.textSecondary),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, AppRoutes.register);
+                                },
+                                child: const Text('Daftar sebagai Pasien'),
+                              ),
+                            ],
                           ),
                         ],
                       ),

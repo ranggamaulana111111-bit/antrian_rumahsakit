@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../config/app_constants.dart';
 import '../config/app_routes.dart';
 import '../repositories/queue_repository.dart';
+import '../services/auth_service.dart';
 
 class QueueListPage extends StatefulWidget {
   const QueueListPage({super.key});
@@ -30,6 +31,7 @@ class QueueListBody extends StatefulWidget {
 
 class _QueueListBodyState extends State<QueueListBody> {
   final QueueRepository _repo = QueueRepository();
+  final AuthService _auth = AuthService();
   List<Map<String, dynamic>> _queues = [];
   bool _isLoading = true;
 
@@ -42,7 +44,10 @@ class _QueueListBodyState extends State<QueueListBody> {
   void _loadQueues() async {
     setState(() => _isLoading = true);
     try {
-      final data = await _repo.getAllQueuesWithDetails();
+      final data = _auth.isAdmin
+          ? await _repo.getAllQueuesWithDetails()
+          : await _repo.getQueuesByPatientIdWithDetails(
+              _auth.currentUser?.patientId ?? 0);
       if (mounted) setState(() { _queues = data; _isLoading = false; });
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
